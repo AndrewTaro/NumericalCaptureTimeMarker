@@ -1,0 +1,101 @@
+(def element WorldCapturePointMarker (_entityId:number) layout=true
+	(scope
+		(var markerEntity:gfx = "$datahub.getEntity(_entityId)")
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+		(macro GET_MARKER_ENTITY_COMPONENT 'worldMarkerScale')
+
+		(var scaleValue:number = "worldMarkerScaleComponent.value" (event "worldMarkerScaleComponent.evValueChanged"))
+
+		(var prefsEntity:gfx = "$datahub.getSingleEntity(CC.prefsMarker)")
+		(var altVisionMode:number = "prefsEntity.prefsBattle.altVisionMode" (event "prefsEntity.prefsBattle.evUpdate"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+		(var isAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ENABLED")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(bottom = 26)
+		)
+		(element TargetAnimationItem "_entityId"
+			(style (position = "absolute"))
+		)
+		(controller $Instance renderer='ScenarioTagItem'
+			(bind enabled "scenarioTagComponent != null")
+			(args _entityId="_entityId")
+			(exprs
+				(style
+					(position = "absolute")
+					(bottom = 18)
+				)
+			)
+		)
+		#mod
+		(element CapturePointTimerItem "_entityId"
+			(style (position = "absolute"))
+		)
+		#
+	)
+
+	(element CapturePointIndicator "_entityId"
+		(macro BIND_FAIR_SCALE "isAltVisionMode ? 1 : scaleValue")
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+	)
+)
+
+(def element CapturePointTimerItem (_entityId:number) layout=true
+	(scope
+		(var markerEntity:gfx = "$datahub.getEntity(_entityId)")
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'capturePoint')
+		(macro GET_MARKER_ENTITY_COMPONENT 'progress')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro VAR_RELATION "markerEntity")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var timeToCapture:number = "capturePointComponent ? capturePointComponent.timeLeft: 0" (event "capturePointComponent.evTimeLeftChanged"))
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "timeToCapture")
+
+		(var bothInside:bool = "capturePointComponent && capturePointComponent.bothInside" (event "capturePointComponent.evBothInsideChanged"))
+		(var captureProgress:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+		(var isCaptured:bool = "captureProgress == 0")
+		
+		(var relationValue:number = "relationComponent ? relationComponent.value : SC.Battle.PLAYER_RELATION.SELF" (event "relationComponent.evChanged"))
+		(var isAlly:bool = "relationValue == SC.Battle.PLAYER_RELATION.ALLY")
+		(var isEnemy:bool = "relationValue == SC.Battle.PLAYER_RELATION.ENEMY")
+		
+		(var timerItemVisibility:bool = "!(bothInside || isCaptured)" (event "progressComponent.evChanged") (event "capturePointComponent.evBothInsideChanged"))
+
+		(var labelTextColor:number = "	isAlly 	? CAPTURE_POINT_LABEL_COLORS.GREEN :
+										isEnemy ? CAPTURE_POINT_LABEL_COLORS.RED
+												: CAPTURE_POINT_LABEL_COLORS.WHITE")
+	)
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(block
+			(bind visible "timerItemVisibility")
+			(class $WorldMarkerItemMargins)
+			(style
+				(position = "absolute")
+				(hcenter = 0px)
+			)
+			(tf
+				(class $WorldMarkerTextItem)
+				(bind text "countdownText")
+				
+				(style
+					(bind textColor "labelTextColor")
+				)
+			)
+		)
+	)
+)
