@@ -42,7 +42,12 @@
 	)
 
 	(element CapturePointIndicator "_entityId"
-		(macro BIND_FAIR_SCALE "isAltVisionMode ? 1 : scaleValue")
+		(style
+			(marginLeft = "-50%") (marginTop = "-50%")
+			(pivotX = "50%") (pivotY = "50%")
+			(bind scaleX "isAltVisionMode ? 1 : scaleValue")
+			(bind scaleY "isAltVisionMode ? 1 : scaleValue")
+		)
 		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
 	)
 )
@@ -58,7 +63,6 @@
 
 		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
 		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
-		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
 		(var timeToCapture:number = "capturePointComponent ? capturePointComponent.timeLeft: 0" (event "capturePointComponent.evTimeLeftChanged"))
 		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "timeToCapture")
 
@@ -76,7 +80,7 @@
 										isEnemy ? CAPTURE_POINT_LABEL_COLORS.RED
 												: CAPTURE_POINT_LABEL_COLORS.WHITE")
 	)
-	
+
 	(block
 		(class $FullsizeAbsolute)
 		(style (align = "center|middle"))
@@ -87,6 +91,7 @@
 			(style
 				(position = "absolute")
 				(hcenter = 0px)
+				(bottom = 15px)
 			)
 			(tf
 				(class $WorldMarkerTextItem)
