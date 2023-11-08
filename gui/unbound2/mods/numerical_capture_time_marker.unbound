@@ -5,8 +5,7 @@
 
 		(var scaleValue:number = "worldMarkerScaleComponent.value" (event "worldMarkerScaleComponent.evValueChanged"))
 
-		(var prefsEntity:gfx = "$datahub.getSingleEntity(CC.prefsMarker)")
-		(var altVisionMode:number = "prefsEntity.prefsBattle.altVisionMode" (event "prefsEntity.prefsBattle.evUpdate"))
+		(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
 
 		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
 		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
@@ -33,13 +32,13 @@
 			)
 		)
 		#mod
-		(element CapturePointTimerItem "_entityId"
+		(element CapturePointTimerItem "_markerEntity"
 			(style (position = "absolute"))
 		)
 		#
 	)
 
-	(element CapturePointIndicator "_entityId"
+	(element CapturePointIndicator "_markerEntity"
 		(style
 			(marginLeft = "-50%") (marginTop = "-50%")
 			(pivotX = "50%") (pivotY = "50%")
@@ -50,14 +49,13 @@
 	)
 )
 
-(def element CapturePointTimerItem (_entityId:number) layout=true
-	(scope
-		(var markerEntity:gfx = "$datahub.getEntity(_entityId)")
 
+(def element CapturePointTimerItem (_markerEntity:gfx) layout=true
+	(scope
 		(macro GET_MARKER_ENTITY_COMPONENT 'capturePoint')
 		(macro GET_MARKER_ENTITY_COMPONENT 'progress')
 		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
-		(macro VAR_RELATION "markerEntity")
+		(macro VAR_RELATION "_markerEntity")
 
 		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
 		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
