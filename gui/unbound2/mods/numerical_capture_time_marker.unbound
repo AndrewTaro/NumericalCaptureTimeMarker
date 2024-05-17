@@ -32,9 +32,7 @@
 			)
 		)
 		#mod
-		(element CapturePointTimerItem "_markerEntity"
-			(style (position = "absolute"))
-		)
+		(element CapturePointTimerItem "_markerEntity")
 		#
 	)
 
@@ -57,8 +55,6 @@
 		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
 		(macro VAR_RELATION "_markerEntity")
 
-		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
-		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
 		(var timeToCapture:number = "capturePointComponent ? capturePointComponent.timeLeft: 0" (event "capturePointComponent.evTimeLeftChanged"))
 		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "timeToCapture")
 
@@ -70,32 +66,29 @@
 		(var isAlly:bool = "relationValue == SC.Battle.PLAYER_RELATION.ALLY")
 		(var isEnemy:bool = "relationValue == SC.Battle.PLAYER_RELATION.ENEMY")
 		
-		(var timerItemVisibility:bool = "!(bothInside || isCaptured)" (event "progressComponent.evChanged") (event "capturePointComponent.evBothInsideChanged"))
+		(var timerItemVisibility:bool = "!(isCaptured && !bothInside)") # Captured and No Enemy is Inside
 
 		(var labelTextColor:number = "	isAlly 	? CAPTURE_POINT_LABEL_COLORS.GREEN :
 										isEnemy ? CAPTURE_POINT_LABEL_COLORS.RED
 												: CAPTURE_POINT_LABEL_COLORS.WHITE")
+
+		(var displayedTime:str = "bothInside ? '--:--' : countdownText")
 	)
 
 	(block
-		(class $FullsizeAbsolute)
-		(style (align = "center|middle"))
-
-		(block
-			(bind visible "timerItemVisibility")
-			(class $WorldMarkerItemMargins)
+		(bind visible "timerItemVisibility")
+		(class $WorldMarkerItemMargins)
+		(style
+			(position = "absolute")
+			(hcenter = 0px)
+			(bottom = 15px)
+		)
+		(tf
+			(class $WorldMarkerTextItem)
+			(bind text "displayedTime")
+			
 			(style
-				(position = "absolute")
-				(hcenter = 0px)
-				(bottom = 15px)
-			)
-			(tf
-				(class $WorldMarkerTextItem)
-				(bind text "countdownText")
-				
-				(style
-					(bind textColor "labelTextColor")
-				)
+				(bind textColor "labelTextColor")
 			)
 		)
 	)
