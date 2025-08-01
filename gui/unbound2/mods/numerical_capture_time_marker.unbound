@@ -31,7 +31,7 @@
 				)
 			)
 		)
-		#mod
+		# Mod
 		(element CapturePointTimerItem "_markerEntity")
 		#
 	)
@@ -66,7 +66,8 @@
 		(var isAlly:bool = "relationValue == SC.Battle.PLAYER_RELATION.ALLY")
 		(var isEnemy:bool = "relationValue == SC.Battle.PLAYER_RELATION.ENEMY")
 		
-		(var timerItemVisibility:bool = "!(isCaptured && !bothInside)") # Captured and No Enemy is Inside
+		(macro IS_SPECTATOR_MODE)
+		(var timerItemVisibility:bool = "!isSpectatorTrainingMode && !(isCaptured && !bothInside)") # Captured and No Enemy is Inside
 
 		(var labelTextColor:number = "	isAlly 	? CAPTURE_POINT_LABEL_COLORS.GREEN :
 										isEnemy ? CAPTURE_POINT_LABEL_COLORS.RED
